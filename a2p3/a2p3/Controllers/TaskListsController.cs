@@ -77,8 +77,20 @@ namespace a2p3.Controllers
 
         // DELETE api/<controller>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public ActionResult Delete(int id)
         {
+            var taskList = db.TaskLists.SingleOrDefault(t => t.TaskID == id);
+
+            if(taskList == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                db.TaskLists.Remove(taskList);
+                db.SaveChanges();
+                return Ok();
+            }
         }
     }
 }
