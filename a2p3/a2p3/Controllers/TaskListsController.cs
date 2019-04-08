@@ -29,21 +29,50 @@ namespace a2p3.Controllers
 
         // GET api/<controller>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public ActionResult Get(int id)
         {
-            return "value";
+            var taskList = db.TaskLists.SingleOrDefault(t => t.TaskID == id);
+
+            if(taskList == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(taskList);
+            }
         }
 
         // POST api/<controller>
         [HttpPost]
-        public void Post([FromBody]string value)
+        public ActionResult Post([FromBody]TaskList taskList)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            else
+            {
+                db.TaskLists.Add(taskList);
+                db.SaveChanges();
+                return CreatedAtAction("Post", new { id = taskList.TaskID }, taskList);
+            }
         }
 
         // PUT api/<controller>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        public ActionResult Put(int id, [FromBody]TaskList taskList)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            else
+            {
+                db.Entry(taskList).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                db.SaveChanges();
+                return AcceptedAtAction("Put", new { id = taskList.TaskID }, taskList);
+            }
         }
 
         // DELETE api/<controller>/5
